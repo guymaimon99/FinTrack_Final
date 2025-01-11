@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import WelcomePage from './components/WelcomePage';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
@@ -15,14 +16,9 @@ import ForgotPassword from './components/ForgotPassword';
 function App() {
   const path = window.location.pathname;
 
-  useEffect(() => {
-    if (path === '/') {
-      window.location.href = '/login';
-    }
-  }, [path]);
-
   return (
     <div className="App">
+      {path === '/' && <WelcomePage />}
       {path === '/register' && <RegistrationForm />}
       {path === '/login' && <LoginForm />}
       {path === '/dashboard' && <Dashboard />}
@@ -30,10 +26,9 @@ function App() {
       {path === '/add-expense' && <AddExpense />}
       {path === '/set-goals' && <SetGoals />}
       {path === '/list-income' && <ListIncome />}
-      {/* //{path === '/notifications' && <Notifications />} */}
+      {/* {path === '/notifications' && <Notifications />} */}
       {path === '/list-expenses' && <ListExpenses />}
       {path === '/Budget' && <Budget />}
-      {path === '/forgot-password' && <ForgotPassword />}
     </div>
   );
 }

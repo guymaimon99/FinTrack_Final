@@ -50,11 +50,9 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
-        </h2>
+    <div className="login-form-container">
+      <div className="form-header">
+        <h2>Sign in to your account</h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
@@ -109,19 +107,107 @@ const LoginForm = () => {
                 href="/register" 
                 className="text-blue-600 hover:text-blue-500"
               >
-                Dont have an account? Register
+                Don't have an account? Register
               </a>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <a href="/forgot-password" className="text-blue-600 hover:text-blue-500">
-                  Forgot your password?
-                </a>
-              </div>
             </div>
           </form>
         </div>
       </div>
+      <style>
+        {`
+          .login-form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(to right, #ebf8ff, #ffffff);
+          }
+
+          .form-header h2 {
+            font-size: 2rem;
+            color: #1e3a8a;
+            margin-bottom: 1rem;
+          }
+
+          .form-body {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+          }
+
+          .form-group {
+            margin-bottom: 1rem;
+          }
+
+          .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 600;
+          }
+
+          .form-group input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            outline: none;
+            font-size: 1rem;
+          }
+
+          .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+          }
+
+          .error-message {
+            color: #f87171;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+          }
+
+          .form-group button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+          }
+
+          .form-group button:hover {
+            background-color: #2563eb;
+          }
+
+          .form-group button:disabled {
+            background-color: #93c5fd;
+            cursor: not-allowed;
+          }
+
+          .register-link {
+            text-align: center;
+            margin-top: 1rem;
+          }
+
+          .register-link a {
+            color: #3b82f6;
+            text-decoration: underline;
+            transition: color 0.3s;
+          }
+
+          .register-link a:hover {
+            color: #2563eb;
+          }
+        `}
+      </style>
     </div>
   );
 };

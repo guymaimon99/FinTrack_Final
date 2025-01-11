@@ -1,16 +1,13 @@
 {
   "name": "servertest",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "node-mailjet": "^6.0.6",
-    "nodemailer": "^6.9.16"
-  }
+  "description": ""
 }

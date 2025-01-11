@@ -540,14 +540,33 @@ app.get('/api/expense', verifyToken, (req, res) => {
 });
 
 // Add an endpoint to get total expenses
+// app.get('/api/expense/total', verifyToken, (req, res) => {
+//   const userId = req.user.userId;
+  
+//   const query = `
+//     SELECT SUM(Amount) as totalExpense, Currency
+//     FROM Expense
+//     WHERE UserID = ?
+//     GROUP BY Currency
+//   `;
+
+//   db.query(query, [userId], (err, results) => {
+//     if (err) {
+//       console.error('Error fetching total expenses:', err);
+//       return res.status(500).json({ error: 'Failed to fetch total expenses' });
+//     }
+    
+//     res.json(results);
+//   });
+// });
+// הוצאות - API כולל תיקון
 app.get('/api/expense/total', verifyToken, (req, res) => {
   const userId = req.user.userId;
-  
+
   const query = `
-    SELECT SUM(Amount) as totalExpense, Currency
+    SELECT COALESCE(SUM(Amount), 0) as totalExpense
     FROM Expense
     WHERE UserID = ?
-    GROUP BY Currency
   `;
 
   db.query(query, [userId], (err, results) => {
@@ -555,8 +574,30 @@ app.get('/api/expense/total', verifyToken, (req, res) => {
       console.error('Error fetching total expenses:', err);
       return res.status(500).json({ error: 'Failed to fetch total expenses' });
     }
-    
-    res.json(results);
+
+    // החזרת סכום ב-JSON בצורה תקינה
+    res.json({ totalExpense: results[0].totalExpense });
+  });
+});
+
+// הכנסות - API כולל תיקון
+app.get('/api/income/total', verifyToken, (req, res) => {
+  const userId = req.user.userId;
+
+  const query = `
+    SELECT COALESCE(SUM(Amount), 0) as totalIncome
+    FROM Income
+    WHERE UserID = ?
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Error fetching total income:', err);
+      return res.status(500).json({ error: 'Failed to fetch total income' });
+    }
+
+    // החזרת סכום ב-JSON בצורה תקינה
+    res.json({ totalIncome: results[0].totalIncome });
   });
 });
 
