@@ -11,6 +11,7 @@ import ListIncome from './components/ListIncome';
 import ListExpenses from './components/ListExpenses'; 
 import Budget from './components/Budget'; 
 import ForgotPassword from './components/ForgotPassword';
+import ViewGoals from './components/ViewGoals';
 
 
 function App() {
@@ -29,6 +30,8 @@ function App() {
       {/* {path === '/notifications' && <Notifications />} */}
       {path === '/list-expenses' && <ListExpenses />}
       {path === '/Budget' && <Budget />}
+      {path === '/ForgotPassword' && <ForgotPassword />}
+      {path === '/ViewGoals' && <ViewGoals />}
     </div>
   );
 }

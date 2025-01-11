@@ -206,8 +206,19 @@ const Dashboard = () => {
           <li><a href="/list-income">List Income</a></li>
           <li><a href="/list-expenses">List Expenses</a></li>
           <li><a href="/set-goals">Set Goals</a></li>
+          <li><a href="/ViewGoals">View Goals</a></li>
           <li><a href="/view-budget">View Budget</a></li>
-          <li><a onClick={() => localStorage.clear() && (window.location.href = '/login')}>Logout</a></li>
+          <li>
+            <a 
+              onClick={() => {
+                localStorage.clear();
+                window.location.href = '/login';
+              }}
+              className="cursor-pointer hover:text-blue-500"
+            >
+              Logout
+            </a>
+          </li>
         </ul>
       </div>
 

@@ -4,7 +4,7 @@ const WelcomePage = () => {
   const [showAnimation, setShowAnimation] = useState(true);
 
   const handleAnimationEnd = () => {
-    setTimeout(() => setShowAnimation(false), 3000);
+    setTimeout(() => setShowAnimation(false), 100);
   };
 
   const handleGetStarted = () => {

@@ -12,7 +12,6 @@ const SetGoals = () => {
         priority: '0',
     });
 
-    const [goals, setGoals] = useState([]);
     const [success, setSuccess] = useState(false);
 
     const handleChange = (e) => {
@@ -20,19 +19,39 @@ const SetGoals = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = () => {
-        setGoals([...goals, { ...formData, id: goals.length + 1 }]);
-        setFormData({
-            name: '',
-            targetAmount: '',
-            startDate: new Date().toISOString().split('T')[0],
-            targetDate: '',
-            description: '',
-            priority: '0',
-        });
-        setSuccess(true);
-        setStep(1);
-        setTimeout(() => setSuccess(false), 5000);
+    const handleSubmit = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const userId = localStorage.getItem('userId');
+
+            const response = await fetch('http://localhost:5001/api/savings-goals', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({...formData, userId})
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save goal');
+            }
+
+            setFormData({
+                name: '',
+                targetAmount: '',
+                startDate: new Date().toISOString().split('T')[0],
+                targetDate: '',
+                description: '',
+                priority: '0',
+            });
+            setSuccess(true);
+            setStep(1);
+            setTimeout(() => setSuccess(false), 5000);
+        } catch (error) {
+            console.error('Error saving goal:', error);
+            // You can show an error message to the user here
+        }
     };
 
     const renderStepContent = () => {
@@ -120,7 +139,7 @@ const SetGoals = () => {
                         justify-content: center;
                         font-family: 'Roboto', sans-serif;
                         padding: 20px;
-                        position: relative; /* מאפשר למקם את כפתור החזרה */
+                        position: relative;
                     }
 
                     .back-button {
@@ -147,7 +166,7 @@ const SetGoals = () => {
                         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                         max-width: 400px;
                         width: 100%;
-                        height: 400px; /* גובה קבוע */
+                        height: 400px;
                         display: flex;
                         flex-direction: column;
                         justify-content: center;
@@ -161,7 +180,7 @@ const SetGoals = () => {
                     .content {
                         display: flex;
                         flex-direction: column;
-                        gap: 20px; /* מרווח בין האלמנטים */
+                        gap: 20px;
                         width: 100%;
                     }
 
@@ -206,8 +225,8 @@ const SetGoals = () => {
                     }
                 `}
             </style>
-            <button className="back-button" onClick={() => (window.location.href = '/')}>
-                Home
+            <button className="back-button" onClick={() => (window.location.href = '/dashboard')}>
+                Go Back
             </button>
             <div className="step">{renderStepContent()}</div>
         </div>
