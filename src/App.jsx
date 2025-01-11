@@ -9,6 +9,8 @@ import ListIncome from './components/ListIncome';
 // import Notifications from './components/Notifications'; 
 import ListExpenses from './components/ListExpenses'; 
 import Budget from './components/Budget'; 
+import ForgotPassword from './components/ForgotPassword';
+
 
 function App() {
   const path = window.location.pathname;
@@ -31,6 +33,7 @@ function App() {
       {/* //{path === '/notifications' && <Notifications />} */}
       {path === '/list-expenses' && <ListExpenses />}
       {path === '/Budget' && <Budget />}
+      {path === '/forgot-password' && <ForgotPassword />}
     </div>
   );
 }

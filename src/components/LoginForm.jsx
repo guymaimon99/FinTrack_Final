@@ -109,8 +109,15 @@ const LoginForm = () => {
                 href="/register" 
                 className="text-blue-600 hover:text-blue-500"
               >
-                Don't have an account? Register
+                Dont have an account? Register
               </a>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="text-sm">
+                <a href="/forgot-password" className="text-blue-600 hover:text-blue-500">
+                  Forgot your password?
+                </a>
+              </div>
             </div>
           </form>
         </div>

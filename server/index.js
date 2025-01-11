@@ -6,6 +6,8 @@ import cors from 'cors';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+
 dotenv.config();
 
 const app = express();
@@ -32,6 +34,19 @@ db.connect(err => {
     console.log('Connected to database!');
 });
 
+// Create MailerSend SMTP transporter
+const transporter = nodemailer.createTransport({
+  host: 'smtp.mailersend.net',
+  port: 587,
+  secure: false,
+  auth: {
+      user: 'MS_Lm0GF8@trial-ynrw7gy5ojr42k8e.mlsender.net',
+      pass: 'FmOfITduH5VXXI1S'
+  }
+});
+
+// Store reset codes temporarily (in production, use Redis or similar)
+const resetCodes = new Map();
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
     try {
@@ -667,3 +682,153 @@ app.put('/api/budgets/:budgetId', verifyToken, (req, res) => {
       res.json({ message: 'Budget updated successfully' , result});
   });
 });
+
+/////
+// Generate reset code endpoint
+app.post('/api/forgot-password', async (req, res) => {
+  try {
+      const { email } = req.body;
+
+      // Check if user exists
+      db.query('SELECT UserID FROM Users WHERE Email = ?', [email], async (err, results) => {
+          if (err) {
+              console.error(err);
+              return res.status(500).json({ error: 'Database error' });
+          }
+
+          if (results.length === 0) {
+              return res.status(404).json({ error: 'User not found' });
+          }
+
+          // Generate random 4-digit code
+          const resetCode = Math.floor(1000 + Math.random() * 9000).toString();
+          
+          // Store code with email and timestamp
+          resetCodes.set(email, {
+              code: resetCode,
+              timestamp: Date.now(),
+              userId: results[0].UserID
+          });
+
+          try {
+              // Send email using MailerSend SMTP
+              await transporter.sendMail({
+                  from: 'FinTrack <noreply@trial-ynrw7gy5ojr42k8e.mlsender.net>',
+                  to: email,
+                  subject: 'Password Reset Code',
+                  html: `
+                      <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                          <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                              <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+                              <p>Hello,</p>
+                              <p>You have requested to reset your password for your FinTrack account. Here is your verification code:</p>
+                              <div style="text-align: center; padding: 20px;">
+                                  <h1 style="color: #4A90E2; font-size: 32px; letter-spacing: 5px; background-color: #f8f9fa; padding: 10px; border-radius: 5px;">${resetCode}</h1>
+                              </div>
+                              <p>This code will expire in 15 minutes.</p>
+                              <p>If you didn't request this reset, please ignore this email.</p>
+                              <hr style="border: 1px solid #eee; margin: 20px 0;">
+                              <p style="color: #666; font-size: 12px; text-align: center;">This is an automated message from FinTrack. Please do not reply to this email.</p>
+                          </div>
+                      </div>
+                  `
+              });
+
+              res.json({ message: 'Reset code sent successfully' });
+          } catch (emailError) {
+              console.error('Error sending email:', emailError);
+              res.status(500).json({ 
+                  error: 'Failed to send reset code',
+                  details: emailError.message
+              });
+          }
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Verify reset code endpoint (remains the same)
+app.post('/api/verify-reset-code', (req, res) => {
+  const { email, code } = req.body;
+  const resetData = resetCodes.get(email);
+
+  if (!resetData) {
+      return res.status(400).json({ error: 'No reset code found' });
+  }
+
+  // Check if code is expired (15 minutes)
+  if (Date.now() - resetData.timestamp > 15 * 60 * 1000) {
+      resetCodes.delete(email);
+      return res.status(400).json({ error: 'Reset code expired' });
+  }
+
+  if (resetData.code !== code) {
+      return res.status(400).json({ error: 'Invalid reset code' });
+  }
+
+  res.json({ 
+      message: 'Code verified successfully',
+      userId: resetData.userId
+  });
+});
+
+// Reset password endpoint
+app.post('/api/reset-password', async (req, res) => {
+  try {
+      const { email, newPassword } = req.body;
+      const resetData = resetCodes.get(email);
+
+      if (!resetData) {
+          return res.status(400).json({ error: 'Invalid reset request' });
+      }
+
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // Update password in database
+      db.query(
+          'UPDATE Users SET Password = ? WHERE Email = ?',
+          [hashedPassword, email],
+          async (err, result) => {
+              if (err) {
+                  console.error(err);
+                  return res.status(500).json({ error: 'Failed to update password' });
+              }
+
+              // Clear reset code
+              resetCodes.delete(email);
+
+              try {
+                  // Send confirmation email
+                  await transporter.sendMail({
+                      from: 'FinTrack <noreply@trial-ynrw7gy5ojr42k8e.mlsender.net>',
+                      to: email,
+                      subject: 'Password Reset Successful',
+                      html: `
+                          <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                              <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                  <h2 style="color: #333; text-align: center;">Password Reset Successful</h2>
+                                  <p>Hello,</p>
+                                  <p>Your FinTrack account password has been successfully reset.</p>
+                                  <p>If you did not make this change, please contact our support team immediately.</p>
+                                  <hr style="border: 1px solid #eee; margin: 20px 0;">
+                                  <p style="color: #666; font-size: 12px; text-align: center;">This is an automated message from FinTrack. Please do not reply to this email.</p>
+                              </div>
+                          </div>
+                      `
+                  });
+              } catch (emailError) {
+                  console.error('Error sending confirmation email:', emailError);
+              }
+
+              res.json({ message: 'Password updated successfully' });
+          }
+      );
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
+  }
+});
+///
