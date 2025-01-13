@@ -1,4 +1,3 @@
-// src/components/LoginForm.js
 import React, { useState } from 'react';
 
 const LoginForm = () => {
@@ -40,7 +39,6 @@ const LoginForm = () => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.user.id);
       
-      // Use window.location instead of navigate
       window.location.href = '/dashboard';
     } catch (error) {
       setError(error.message);
@@ -50,164 +48,301 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="login-form-container">
-      <div className="form-header">
-        <h2>Sign in to your account</h2>
-      </div>
+    <div className="login-container">
+      <div className="login-form-wrapper">
+        <div className="form-header">
+          <div className="logo-container">
+            <div className="logo">FT</div>
+          </div>
+          <h1>Welcome Back!</h1>
+          <p>Please sign in to your account</p>
+        </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <div className="input-container">
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
               />
             </div>
+          </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
+          <div className="form-group">
+            <div className="password-header">
+              <label htmlFor="password">Password</label>
+              <a href="/ForgotPassword" className="forgot-link">
+                Forgot Password?
+              </a>
+            </div>
+            <div className="input-container">
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
               />
             </div>
+          </div>
 
-            {error && (
-              <div className="text-red-600 text-sm">{error}</div>
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="login-button"
+          >
+            {isLoading ? (
+              <span className="loading-spinner"></span>
+            ) : (
+              'Sign in'
             )}
+          </button>
 
-            <div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-              >
-                {isLoading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-
-            <div className="text-center mt-4">
-              <a 
-                href="/register" 
-                className="text-blue-600 hover:text-blue-500"
-              >
-                Don't have an account? Register
-              </a>
-            </div>
-          </form>
-        </div>
+          <div className="register-prompt">
+            <p>Don't have an account?</p>
+            <a href="/register" className="register-link">
+              Create Account
+            </a>
+          </div>
+        </form>
       </div>
-      <style>
-        {`
-          .login-form-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(to right, #ebf8ff, #ffffff);
+
+      <style>{`
+        .login-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+          padding: 20px;
+        }
+
+        .login-form-wrapper {
+          background: white;
+          padding: 2.5rem;
+          border-radius: 20px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+          width: 100%;
+          max-width: 420px;
+        }
+
+        .form-header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .logo-container {
+          margin-bottom: 1.5rem;
+        }
+
+        .logo {
+          width: 60px;
+          height: 60px;
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin: 0 auto;
+          box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-header h1 {
+          color: #1e293b;
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+          color: #64748b;
+          font-size: 0.95rem;
+        }
+
+        .login-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.25rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .password-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        label {
+          color: #1e293b;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .input-container {
+          position: relative;
+        }
+
+        input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          font-size: 0.95rem;
+          color: #1e293b;
+          transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+          color: #94a3b8;
+        }
+
+        input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .forgot-link {
+          color: #3b82f6;
+          font-size: 0.85rem;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+
+        .forgot-link:hover {
+          color: #1d4ed8;
+          text-decoration: underline;
+        }
+
+        .error-message {
+          background-color: #fee2e2;
+          color: #dc2626;
+          padding: 0.75rem;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          text-align: center;
+        }
+
+        .login-button {
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+          color: white;
+          padding: 0.875rem;
+          border: none;
+          border-radius: 10px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 48px;
+        }
+
+        .login-button:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .login-button:active {
+          transform: translateY(0);
+        }
+
+        .login-button:disabled {
+          background: #94a3b8;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        .loading-spinner {
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          border-top-color: white;
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .register-prompt {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 1rem;
+          padding-top: 1rem;
+          border-top: 1px solid #e2e8f0;
+        }
+
+        .register-prompt p {
+          color: #64748b;
+          font-size: 0.95rem;
+        }
+
+        .register-link {
+          color: #3b82f6;
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.3s ease;
+        }
+
+        .register-link:hover {
+          color: #1d4ed8;
+          text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+          .login-form-wrapper {
+            padding: 1.5rem;
           }
 
-          .form-header h2 {
-            font-size: 2rem;
-            color: #1e3a8a;
-            margin-bottom: 1rem;
+          .form-header h1 {
+            font-size: 1.5rem;
           }
 
-          .form-body {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
+          .logo {
+            width: 50px;
+            height: 50px;
+            font-size: 1.25rem;
           }
 
-          .form-group {
-            margin-bottom: 1rem;
+          input {
+            padding: 0.625rem 0.875rem;
           }
 
-          .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-weight: 600;
-          }
-
-          .form-group input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            outline: none;
-            font-size: 1rem;
-          }
-
-          .form-group input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-          }
-
-          .error-message {
-            color: #f87171;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-          }
-
-          .form-group button {
-            width: 100%;
+          .login-button {
             padding: 0.75rem;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
           }
-
-          .form-group button:hover {
-            background-color: #2563eb;
-          }
-
-          .form-group button:disabled {
-            background-color: #93c5fd;
-            cursor: not-allowed;
-          }
-
-          .register-link {
-            text-align: center;
-            margin-top: 1rem;
-          }
-
-          .register-link a {
-            color: #3b82f6;
-            text-decoration: underline;
-            transition: color 0.3s;
-          }
-
-          .register-link a:hover {
-            color: #2563eb;
-          }
-        `}
-      </style>
+        }
+      `}</style>
     </div>
   );
 };
