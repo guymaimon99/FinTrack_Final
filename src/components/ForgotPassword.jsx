@@ -89,37 +89,29 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Reset your password
-        </h2>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+    <div className="forgot-password-container">
+      <div className="form-container">
+        <h2>Reset your password</h2>
+        <div className="form-box">
           {step === 'email' && (
-            <form onSubmit={handleSendCode} className="space-y-6">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
-                </label>
+            <form onSubmit={handleSendCode} className="form-content">
+              <div className="form-group">
+                <label htmlFor="email">Email address</label>
                 <input
                   id="email"
                   type="email"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
 
-              {error && <div className="text-red-600 text-sm">{error}</div>}
+              {error && <div className="error-message">{error}</div>}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="submit-button"
               >
                 {isLoading ? 'Sending...' : 'Send Reset Code'}
               </button>
@@ -127,28 +119,25 @@ const ForgotPassword = () => {
           )}
 
           {step === 'code' && (
-            <form onSubmit={handleVerifyCode} className="space-y-6">
-              <div>
-                <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                  Enter 4-digit reset code
-                </label>
+            <form onSubmit={handleVerifyCode} className="form-content">
+              <div className="form-group">
+                <label htmlFor="code">Enter 4-digit reset code</label>
                 <input
                   id="code"
                   type="text"
                   maxLength="4"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   value={resetCode}
                   onChange={(e) => setResetCode(e.target.value)}
                 />
               </div>
 
-              {error && <div className="text-red-600 text-sm">{error}</div>}
+              {error && <div className="error-message">{error}</div>}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="submit-button"
               >
                 {isLoading ? 'Verifying...' : 'Verify Code'}
               </button>
@@ -156,34 +145,172 @@ const ForgotPassword = () => {
           )}
 
           {step === 'newPassword' && (
-            <form onSubmit={handleResetPassword} className="space-y-6">
-              <div>
-                <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">
-                  New Password
-                </label>
+            <form onSubmit={handleResetPassword} className="form-content">
+              <div className="form-group">
+                <label htmlFor="newPassword">New Password</label>
                 <input
                   id="newPassword"
                   type="password"
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                 />
               </div>
 
-              {error && <div className="text-red-600 text-sm">{error}</div>}
+              {error && <div className="error-message">{error}</div>}
 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="submit-button"
               >
                 {isLoading ? 'Resetting...' : 'Reset Password'}
               </button>
             </form>
           )}
+
+          <div className="back-to-login">
+            <a href="/login">Back to Login</a>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .forgot-password-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+          padding: 20px;
+        }
+
+        .form-container {
+          width: 100%;
+          max-width: 400px;
+        }
+
+        h2 {
+          color: white;
+          text-align: center;
+          font-size: 2rem;
+          margin-bottom: 2rem;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-box {
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-content {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        label {
+          color: #374151;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        input {
+          padding: 0.75rem;
+          border: 2px solid #e5e7eb;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        input:focus {
+          outline: none;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .error-message {
+          color: #dc2626;
+          font-size: 0.875rem;
+          padding: 0.5rem;
+          background-color: #fee2e2;
+          border-radius: 0.375rem;
+          text-align: center;
+        }
+
+        .submit-button {
+          background-color: #3b82f6;
+          color: white;
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+          background-color: #2563eb;
+          transform: translateY(-1px);
+        }
+
+        .submit-button:active {
+          transform: translateY(0);
+        }
+
+        .submit-button:disabled {
+          background-color: #93c5fd;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .back-to-login {
+          text-align: center;
+          margin-top: 1.5rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #e5e7eb;
+        }
+
+        .back-to-login a {
+          color: #3b82f6;
+          text-decoration: none;
+          font-size: 0.875rem;
+          transition: color 0.3s ease;
+        }
+
+        .back-to-login a:hover {
+          color: #1d4ed8;
+          text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+          .form-box {
+            padding: 1.5rem;
+          }
+
+          h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+          }
+
+          input {
+            padding: 0.625rem;
+          }
+
+          .submit-button {
+            padding: 0.625rem 1.25rem;
+          }
+        }
+      `}</style>
     </div>
   );
 };
