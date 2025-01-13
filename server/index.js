@@ -539,26 +539,53 @@ app.get('/api/expense', verifyToken, (req, res) => {
   });
 });
 
-// Add an endpoint to get total expenses
-// app.get('/api/expense/total', verifyToken, (req, res) => {
-//   const userId = req.user.userId;
+// Monthly Income endpoint
+app.get('/api/income/monthly', verifyToken, (req, res) => {
+    const userId = req.user.userId;
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
   
-//   const query = `
-//     SELECT SUM(Amount) as totalExpense, Currency
-//     FROM Expense
-//     WHERE UserID = ?
-//     GROUP BY Currency
-//   `;
-
-//   db.query(query, [userId], (err, results) => {
-//     if (err) {
-//       console.error('Error fetching total expenses:', err);
-//       return res.status(500).json({ error: 'Failed to fetch total expenses' });
-//     }
-    
-//     res.json(results);
-//   });
-// });
+    const query = `
+      SELECT COALESCE(SUM(Amount), 0) as totalIncome
+      FROM Income
+      WHERE UserID = ?
+      AND TransactionDate BETWEEN ? AND ?
+    `;
+  
+    db.query(query, [userId, firstDay, lastDay], (err, results) => {
+      if (err) {
+        console.error('Error fetching monthly income:', err);
+        return res.status(500).json({ error: 'Failed to fetch monthly income' });
+      }
+  
+      res.json({ totalIncome: results[0].totalIncome });
+    });
+  });
+  
+  // Monthly Expenses endpoint
+  app.get('/api/expense/monthly', verifyToken, (req, res) => {
+    const userId = req.user.userId;
+    const date = new Date();
+    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  
+    const query = `
+      SELECT COALESCE(SUM(Amount), 0) as totalExpense
+      FROM Expense
+      WHERE UserID = ?
+      AND TransactionDate BETWEEN ? AND ?
+    `;
+  
+    db.query(query, [userId, firstDay, lastDay], (err, results) => {
+      if (err) {
+        console.error('Error fetching monthly expenses:', err);
+        return res.status(500).json({ error: 'Failed to fetch monthly expenses' });
+      }
+  
+      res.json({ totalExpense: results[0].totalExpense });
+    });
+  });
 // הוצאות - API כולל תיקון
 app.get('/api/expense/total', verifyToken, (req, res) => {
   const userId = req.user.userId;
