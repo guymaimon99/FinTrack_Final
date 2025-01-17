@@ -9,9 +9,10 @@ import SetGoals from './components/SetGoals';
 import ListIncome from './components/ListIncome'; 
 // import Notifications from './components/Notifications'; 
 import ListExpenses from './components/ListExpenses'; 
-import Budget from './components/Budget'; 
+import SetBudget from './components/SetBudget'; 
 import ForgotPassword from './components/ForgotPassword';
 import ViewGoals from './components/ViewGoals';
+import ViewBudget from './components/ViewBudget';
 
 
 function App() {
@@ -29,9 +30,10 @@ function App() {
       {path === '/list-income' && <ListIncome />}
       {/* {path === '/notifications' && <Notifications />} */}
       {path === '/list-expenses' && <ListExpenses />}
-      {path === '/Budget' && <Budget />}
+      {path === '/set-budget' && <SetBudget />}
       {path === '/ForgotPassword' && <ForgotPassword />}
       {path === '/ViewGoals' && <ViewGoals />}
+      {path === '/view-budget' && <ViewBudget />}
     </div>
   );
 }

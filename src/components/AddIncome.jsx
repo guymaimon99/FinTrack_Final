@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const AddIncome = () => {
   const [formData, setFormData] = useState({
     amount: '',

@@ -58,26 +58,28 @@ const Dashboard = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+      
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
-  
+
       if (!token || !userId) {
         window.location.href = '/login';
         return;
       }
-  
+
       // Get user data
       const userResponse = await fetch(`http://localhost:5001/api/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!userResponse.ok) throw new Error('Failed to fetch user data');
       const userData = await userResponse.json();
       setUser(userData);
-  
-      // Fetch income with correct year and month parameters
+
+      // Fetch income
       const incomeResponse = await fetch(
         `http://localhost:5001/api/income/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
@@ -90,8 +92,8 @@ const Dashboard = () => {
         const incomeData = await incomeResponse.json();
         monthIncome = incomeData.totalIncome || 0;
       }
-  
-      // Fetch expenses with correct year and month parameters
+
+      // Fetch expenses
       const expenseResponse = await fetch(
         `http://localhost:5001/api/expense/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
@@ -104,7 +106,7 @@ const Dashboard = () => {
         const expenseData = await expenseResponse.json();
         monthExpenses = expenseData.totalExpense || 0;
       }
-  
+
       // Update states
       setMonthlyIncome(monthIncome);
       setMonthlyExpenses(monthExpenses);
@@ -112,18 +114,16 @@ const Dashboard = () => {
         income: monthIncome,
         expenses: monthExpenses,
       });
-  
-      // Set hasData based on actual data presence
+
       setHasData(monthIncome > 0 || monthExpenses > 0);
     } catch (err) {
       console.error('Error:', err);
       setError(err.message);
-  
       setMonthlyIncome(0);
       setMonthlyExpenses(0);
       setChartData({ income: 0, expenses: 0 });
       setHasData(false);
-  
+
       if (err.message.includes('Unauthorized')) {
         handleLogout();
       }
@@ -229,16 +229,130 @@ const Dashboard = () => {
   );
 
   // Loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading your financial dashboard...</p>
+// Loading state
+if (loading) {
+  return (
+    <div className="loading-container">
+      <div className="loading-content">
+        <div className="loading-spinner"></div>
+        <div className="loading-text">
+          <h2>FinTrack</h2>
+          <div className="loading-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <p className="loading-message">Loading your financial data...</p>
         </div>
       </div>
-    );
-  }
+
+      <style jsx>{`
+        .loading-container {
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: linear-gradient(135deg, #2563eb, #1e40af);
+          font-family: 'Poppins', sans-serif;
+        }
+
+        .loading-content {
+          background: white;
+          padding: 2.5rem;
+          border-radius: 1rem;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          text-align: center;
+          position: relative;
+          width: 90%;
+          max-width: 400px;
+        }
+
+        .loading-spinner {
+          width: 60px;
+          height: 60px;
+          border: 5px solid #e2e8f0;
+          border-top: 5px solid #2563eb;
+          border-radius: 50%;
+          margin: 0 auto 1.5rem;
+          animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .loading-text h2 {
+          color: #1e40af;
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin: 0;
+        }
+
+        .loading-message {
+          color: #64748b;
+          font-size: 1rem;
+          margin: 0;
+        }
+
+        .loading-dots {
+          display: flex;
+          gap: 6px;
+        }
+
+        .loading-dots span {
+          width: 6px;
+          height: 6px;
+          background-color: #2563eb;
+          border-radius: 50%;
+          display: inline-block;
+          animation: dots 1.5s ease-in-out infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        @keyframes dots {
+          0%, 60%, 100% {
+            transform: translateY(0);
+            opacity: 0.4;
+          }
+          30% {
+            transform: translateY(-4px);
+            opacity: 1;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .loading-content {
+            padding: 2rem;
+          }
+
+          .loading-text h2 {
+            font-size: 1.25rem;
+          }
+
+          .loading-spinner {
+            width: 50px;
+            height: 50px;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
 
   // Error state
   if (error) {
@@ -272,6 +386,7 @@ const Dashboard = () => {
           <li><a href="/list-expenses">List Expenses</a></li>
           <li><a href="/set-goals">Set Goals</a></li>
           <li><a href="/ViewGoals">View Goals</a></li>
+          <li><a href="/set-budget">Set Budget</a></li>
           <li><a href="/view-budget">View Budget</a></li>
           <li>
             <a 

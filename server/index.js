@@ -635,9 +635,7 @@ app.get('/api/income/total', verifyToken, (req, res) => {
 });
 
 
-// Bugdet
-// Add these routes to your server/index.js
-
+/////
 // Create new budget
 app.post('/api/budgets', verifyToken, async (req, res) => {
   try {
@@ -718,46 +716,27 @@ app.get('/api/budgets/:userId', verifyToken, (req, res) => {
 
       // Calculate additional metrics for each budget
       const budgetsWithMetrics = results.map(budget => {
-          const remainingAmount = budget.Amount - budget.SpentAmount;
-          const progressPercentage = (budget.SpentAmount / budget.Amount) * 100;
-          const dailyBudget = remainingAmount / Math.max(budget.DaysRemaining, 1);
+          const spentPercentage = (budget.SpentAmount / budget.Amount) * 100;
+          const dailyBudget = budget.Amount / budget.TotalDays;
+          const expectedSpending = (budget.TotalDays - budget.DaysRemaining) * dailyBudget;
 
           return {
               ...budget,
-              remainingAmount,
-              progressPercentage,
+              spentPercentage,
               dailyBudget,
+              expectedSpending,
               isOverBudget: budget.SpentAmount > budget.Amount,
-              needsAlert: (budget.SpentAmount / budget.Amount) * 100 >= budget.AlertThreshold
+              needsAlert: spentPercentage >= budget.AlertThreshold
           };
       });
 
       res.json(budgetsWithMetrics);
   });
 });
+///
 
-// Update budget spending (this will be called automatically when expenses are added)
-app.put('/api/budgets/:budgetId', verifyToken, (req, res) => {
-  const budgetId = req.params.budgetId;
-  const { amount, alertThreshold } = req.body;
 
-  const query = `
-      UPDATE Budgets 
-      SET Amount = ?, AlertThreshold = ?, UpdatedAt = NOW()
-      WHERE BudgetID = ?
-  `;
 
-  db.query(query, [amount, alertThreshold, budgetId], (err, result) => {
-      if (err) {
-          console.error('Error updating budget:', err);
-          return res.status(500).json({ error: 'Failed to update budget' });
-      }
-
-      res.json({ message: 'Budget updated successfully' , result});
-  });
-});
-
-/////
 // Generate reset code endpoint
 app.post('/api/forgot-password', async (req, res) => {
   try {
