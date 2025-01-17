@@ -60,7 +60,6 @@ const Dashboard = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
-      const { start, end } = getCurrentMonthRange();
   
       if (!token || !userId) {
         window.location.href = '/login';
@@ -78,49 +77,35 @@ const Dashboard = () => {
       const userData = await userResponse.json();
       setUser(userData);
   
-      // Default values
-      let monthIncome = 0;
-      let monthExpenses = 0;
-  
+      // Fetch income with correct year and month parameters
       const incomeResponse = await fetch(
-        `http://localhost:5001/api/income/monthly?start=${start}&end=${end}`,
+        `http://localhost:5001/api/income/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       
+      let monthIncome = 0;
       if (incomeResponse.ok) {
         const incomeData = await incomeResponse.json();
-        if (incomeData && incomeData.totalIncome) {
-          monthIncome = incomeData.totalIncome;
-        } else {
-          monthIncome = 0; // Set to 0 if no data exists
-        }
-      } else {
-        monthIncome = 0; // Set to 0 if response is not ok
+        monthIncome = incomeData.totalIncome || 0;
       }
-      
-      // Fetch expenses for the selected month
+  
+      // Fetch expenses with correct year and month parameters
       const expenseResponse = await fetch(
-        `http://localhost:5001/api/expense/monthly?start=${start}&end=${end}`,
+        `http://localhost:5001/api/expense/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       
+      let monthExpenses = 0;
       if (expenseResponse.ok) {
         const expenseData = await expenseResponse.json();
-        if (expenseData && expenseData.totalExpense) {
-          monthExpenses = expenseData.totalExpense;
-        } else {
-          monthExpenses = 0; // Set to 0 if no data exists
-        }
-      } else {
-        monthExpenses = 0; // Set to 0 if response is not ok
+        monthExpenses = expenseData.totalExpense || 0;
       }
-      
   
-      // Update states based on fetched data
+      // Update states
       setMonthlyIncome(monthIncome);
       setMonthlyExpenses(monthExpenses);
       setChartData({
@@ -128,13 +113,12 @@ const Dashboard = () => {
         expenses: monthExpenses,
       });
   
-      // Determine if data exists for the selected month
+      // Set hasData based on actual data presence
       setHasData(monthIncome > 0 || monthExpenses > 0);
     } catch (err) {
       console.error('Error:', err);
       setError(err.message);
   
-      // Reset everything to 0 on error or no data
       setMonthlyIncome(0);
       setMonthlyExpenses(0);
       setChartData({ income: 0, expenses: 0 });
@@ -190,20 +174,6 @@ const Dashboard = () => {
       <div className="no-data-content">
         <h3>No Data Available</h3>
         <p>Sorry, but you did not enter any information for {months[selectedDate.month]} {selectedDate.year}</p>
-        <div className="button-group">
-          <button 
-            onClick={() => window.location.href = '/add-income'} 
-            className="add-data-button"
-          >
-            Add Income
-          </button>
-          <button 
-            onClick={() => window.location.href = '/add-expense'} 
-            className="add-data-button"
-          >
-            Add Expense
-          </button>
-        </div>
       </div>
       <style jsx>{`
         .no-data-message {

@@ -541,51 +541,57 @@ app.get('/api/expense', verifyToken, (req, res) => {
 
 // Monthly Income endpoint
 app.get('/api/income/monthly', verifyToken, (req, res) => {
-    const userId = req.user.userId;
-    const date = new Date();
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const userId = req.user.userId;
+  const { year, month } = req.query;
   
-    const query = `
-      SELECT COALESCE(SUM(Amount), 0) as totalIncome
-      FROM Income
-      WHERE UserID = ?
-      AND TransactionDate BETWEEN ? AND ?
-    `;
-  
-    db.query(query, [userId, firstDay, lastDay], (err, results) => {
-      if (err) {
-        console.error('Error fetching monthly income:', err);
-        return res.status(500).json({ error: 'Failed to fetch monthly income' });
-      }
-  
-      res.json({ totalIncome: results[0].totalIncome });
-    });
+  // Create date range for the selected month
+  const firstDay = new Date(year, month, 1).toISOString().slice(0, 10);
+  const lastDay = new Date(year, parseInt(month) + 1, 0).toISOString().slice(0, 10);
+
+  const query = `
+    SELECT COALESCE(SUM(Amount), 0) as totalIncome
+    FROM Income
+    WHERE UserID = ?
+    AND DATE(TransactionDate) >= ?
+    AND DATE(TransactionDate) <= ?
+  `;
+
+  db.query(query, [userId, firstDay, lastDay], (err, results) => {
+    if (err) {
+      console.error('Error fetching monthly income:', err);
+      return res.status(500).json({ error: 'Failed to fetch monthly income' });
+    }
+
+    res.json({ totalIncome: results[0].totalIncome });
   });
+});
+
+// Monthly Expenses endpoint
+app.get('/api/expense/monthly', verifyToken, (req, res) => {
+  const userId = req.user.userId;
+  const { year, month } = req.query;
   
-  // Monthly Expenses endpoint
-  app.get('/api/expense/monthly', verifyToken, (req, res) => {
-    const userId = req.user.userId;
-    const date = new Date();
-    const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
-    const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-  
-    const query = `
-      SELECT COALESCE(SUM(Amount), 0) as totalExpense
-      FROM Expense
-      WHERE UserID = ?
-      AND TransactionDate BETWEEN ? AND ?
-    `;
-  
-    db.query(query, [userId, firstDay, lastDay], (err, results) => {
-      if (err) {
-        console.error('Error fetching monthly expenses:', err);
-        return res.status(500).json({ error: 'Failed to fetch monthly expenses' });
-      }
-  
-      res.json({ totalExpense: results[0].totalExpense });
-    });
+  // Create date range for the selected month
+  const firstDay = new Date(year, month, 1).toISOString().slice(0, 10);
+  const lastDay = new Date(year, parseInt(month) + 1, 0).toISOString().slice(0, 10);
+
+  const query = `
+    SELECT COALESCE(SUM(Amount), 0) as totalExpense
+    FROM Expense
+    WHERE UserID = ?
+    AND DATE(TransactionDate) >= ?
+    AND DATE(TransactionDate) <= ?
+  `;
+
+  db.query(query, [userId, firstDay, lastDay], (err, results) => {
+    if (err) {
+      console.error('Error fetching monthly expenses:', err);
+      return res.status(500).json({ error: 'Failed to fetch monthly expenses' });
+    }
+
+    res.json({ totalExpense: results[0].totalExpense });
   });
+});
 // הוצאות - API כולל תיקון
 app.get('/api/expense/total', verifyToken, (req, res) => {
   const userId = req.user.userId;

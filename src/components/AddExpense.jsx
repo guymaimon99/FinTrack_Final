@@ -9,6 +9,7 @@ const AddExpense = () => {
     description: "",
     isRecurring: false,
     recurrenceInterval: "",
+    currency: "ILS"
   });
 
   const [categories, setCategories] = useState([]);
@@ -16,7 +17,6 @@ const AddExpense = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
-  // Fetch categories and payment methods on component mount
   useEffect(() => {
     fetchCategories();
     fetchPaymentMethods();
@@ -32,7 +32,7 @@ const AddExpense = () => {
       const data = await response.json();
       setCategories(data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      setMessage({ type: 'error', text: 'Failed to load categories' });
     }
   };
 
@@ -46,7 +46,7 @@ const AddExpense = () => {
       const data = await response.json();
       setPaymentMethods(data);
     } catch (error) {
-      console.error('Error fetching payment methods:', error);
+      setMessage({ type: 'error', text: 'Failed to load payment methods' });
     }
   };
 
@@ -78,8 +78,7 @@ const AddExpense = () => {
           userId: parseInt(userId),
           amount: parseFloat(formData.amount),
           categoryId: parseInt(formData.categoryId),
-          paymentMethodId: parseInt(formData.paymentMethodId),
-          currency: 'ILS'
+          paymentMethodId: parseInt(formData.paymentMethodId)
         }),
       });
 
@@ -98,8 +97,15 @@ const AddExpense = () => {
         description: "",
         isRecurring: false,
         recurrenceInterval: "",
+        currency: "ILS"
       });
+      
       setMessage({ type: 'success', text: 'Expense added successfully!' });
+      
+      // Redirect after 1.5 seconds
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 1500);
 
     } catch (error) {
       console.error('Error adding expense:', error);
@@ -251,175 +257,174 @@ const AddExpense = () => {
         </form>
       </div>
       <div className="background-overlay"></div>
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+      
+      <style jsx>{`
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-          .add-expense-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #dceafe, #bfdbfe);
-            font-family: 'Poppins', sans-serif;
-            padding: 20px;
-          }
+        .add-expense-container {
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #dceafe, #bfdbfe);
+          font-family: 'Poppins', sans-serif;
+          padding: 20px;
+        }
 
-          .background-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('/images/logonew.png');
-            background-repeat: repeat;
-            background-size: 150px;
-            background-position: center;
-            opacity: 0.05;
-            pointer-events: none;
-          }
+        .background-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image: url('/images/logonew.png');
+          background-repeat: repeat;
+          background-size: 150px;
+          background-position: center;
+          opacity: 0.05;
+          pointer-events: none;
+        }
 
+        .form-card {
+          background: white;
+          border-radius: 15px;
+          padding: 40px;
+          width: 100%;
+          max-width: 500px;
+          box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+          z-index: 2;
+        }
+
+        .form-title {
+          font-size: 1.8rem;
+          color: #1d4ed8;
+          margin-bottom: 30px;
+          text-align: center;
+          font-weight: bold;
+        }
+
+        .message {
+          padding: 12px;
+          border-radius: 8px;
+          margin-bottom: 20px;
+          text-align: center;
+          font-size: 0.9rem;
+        }
+
+        .message.success {
+          background-color: #dcfce7;
+          color: #166534;
+          border: 1px solid #bbf7d0;
+        }
+
+        .message.error {
+          background-color: #fee2e2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
+        }
+
+        .form-content {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .form-group label {
+          font-weight: 600;
+          color: #475569;
+          margin-bottom: 8px;
+          font-size: 0.9rem;
+        }
+
+        .checkbox-label {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+        }
+
+        .form-checkbox {
+          width: 16px;
+          height: 16px;
+          border-radius: 4px;
+          border: 2px solid #cbd5e1;
+          cursor: pointer;
+        }
+
+        .form-input {
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid #cbd5e1;
+          font-size: 1rem;
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+          border-color: #2563eb;
+          box-shadow: 0px 0px 0px 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        .button-group {
+          display: flex;
+          justify-content: space-between;
+          gap: 15px;
+          margin-top: 10px;
+        }
+
+        .submit-button {
+          flex: 1;
+          background: #2563eb;
+          color: white;
+          padding: 12px 20px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .submit-button:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .submit-button:not(:disabled):hover {
+          background: #1d4ed8;
+          transform: translateY(-1px);
+        }
+
+        .submit-button.alt-button {
+          background: #e2e8f0;
+          color: #475569;
+        }
+
+        .submit-button.alt-button:not(:disabled):hover {
+          background: #cbd5e1;
+        }
+
+        @media (max-width: 640px) {
           .form-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            z-index: 2;
-          }
-
-          .form-title {
-            font-size: 1.8rem;
-            color: #1d4ed8;
-            margin-bottom: 30px;
-            text-align: center;
-            font-weight: bold;
-          }
-
-          .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-          }
-
-          .message.success {
-            background-color: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-          }
-
-          .message.error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-          }
-
-          .form-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-          }
-
-          .form-group {
-            display: flex;
-            flex-direction: column;
-          }
-
-          .form-group label {
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-          }
-
-          .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-          }
-
-          .form-checkbox {
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            border: 2px solid #cbd5e1;
-            cursor: pointer;
-          }
-
-          .form-input {
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-          }
-
-          .form-input:focus {
-            border-color: #2563eb;
-            box-shadow: 0px 0px 0px 3px rgba(37, 99, 235, 0.1);
-          }
-
-          .form-textarea {
-            resize: vertical;
-            min-height: 100px;
+            padding: 25px;
           }
 
           .button-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 10px;
+            flex-direction: column;
           }
-
-          .submit-button {
-            flex: 1;
-            background: #2563eb;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-          }
-
-          .submit-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-          }
-
-          .submit-button:not(:disabled):hover {
-            background: #1d4ed8;
-            transform: translateY(-1px);
-          }
-
-          .submit-button.alt-button {
-            background: #e2e8f0;
-            color: #475569;
-          }
-
-          .submit-button.alt-button:not(:disabled):hover {
-            background: #cbd5e1;
-          }
-
-          @media (max-width: 640px) {
-            .form-card {
-              padding: 25px;
-            }
-
-            .button-group {
-              flex-direction: column;
-            }
-          }
-        `}
-      </style>
+        }
+      `}</style>
     </div>
   );
 };
