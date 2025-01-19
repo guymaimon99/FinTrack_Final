@@ -11,6 +11,19 @@ const ViewGoals = () => {
     status: ''
   });
 
+  // New state for modals and notifications
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    targetAmount: '',
+    startDate: '',
+    targetDate: '',
+    description: ''
+  });
+  const [notification, setNotification] = useState({ show: false, type: '', message: '' });
+
   const fetchGoals = async () => {
     try {
       setLoading(true);
@@ -36,6 +49,140 @@ const ViewGoals = () => {
   useEffect(() => {
     fetchGoals();
   }, []);
+
+  const showNotification = (type, message) => {
+    setNotification({ show: true, type, message });
+    setTimeout(() => setNotification({ show: false, type: '', message: '' }), 3000);
+  };
+
+  const handleEditClick = (goal) => {
+    setSelectedGoal(goal);
+    setEditFormData({
+      name: goal.Name,
+      targetAmount: goal.TargetAmount,
+      startDate: goal.StartDate.split('T')[0],
+      targetDate: goal.TargetDate.split('T')[0],
+      description: goal.Description
+    });
+    setShowEditModal(true);
+  };
+
+  const handleDeleteClick = (goal) => {
+    setSelectedGoal(goal);
+    setShowDeleteModal(true);
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+// Updated handleUpdateGoal function
+const handleUpdateGoal = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    // Format the data to match the database schema
+    const updatedGoalData = {
+      GoalID: selectedGoal.GoalID,
+      UserID: parseInt(userId),
+      Name: editFormData.name,
+      TargetAmount: parseFloat(editFormData.targetAmount),
+      CurrentAmount: selectedGoal.CurrentAmount || 0, // Keep existing CurrentAmount
+      Currency: 'USD', // Or get from user preferences
+      StartDate: editFormData.startDate,
+      TargetDate: editFormData.targetDate,
+      Priority: selectedGoal.Priority || 0,
+      Status: 'ACTIVE',
+      Description: editFormData.description
+    };
+
+    console.log('Updating goal with data:', updatedGoalData);
+
+    const response = await fetch(`http://localhost:5001/api/savings-goals/${selectedGoal.GoalID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(updatedGoalData)
+    });
+
+    if (!response.ok) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update goal');
+      } else {
+        const textError = await response.text();
+        console.error('Raw error response:', textError);
+        throw new Error('Server error occurred');
+      }
+    }
+
+    // Update local state
+    const updatedGoals = goals.map(goal => 
+      goal.GoalID === selectedGoal.GoalID 
+        ? { 
+            ...goal,
+            Name: editFormData.name,
+            TargetAmount: parseFloat(editFormData.targetAmount),
+            StartDate: editFormData.startDate,
+            TargetDate: editFormData.targetDate,
+            Description: editFormData.description
+          }
+        : goal
+    );
+
+    setGoals(updatedGoals);
+    setShowEditModal(false);
+    showNotification('success', 'Goal updated successfully!');
+  } catch (error) {
+    console.error('Error updating goal:', error);
+    showNotification('error', error.message || 'Failed to update goal');
+  }
+};
+
+// Updated handleDeleteGoal function
+const handleDeleteGoal = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    console.log(`Deleting goal: ${selectedGoal.GoalID} for user: ${userId}`);
+
+    const response = await fetch(`http://localhost:5001/api/savings-goals/${selectedGoal.GoalID}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+      // Removed body from DELETE request as it's not typically needed
+    });
+
+    if (!response.ok) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete goal');
+      } else {
+        const textError = await response.text();
+        console.error('Raw error response:', textError);
+        throw new Error('Server error occurred');
+      }
+    }
+
+    setGoals(prevGoals => prevGoals.filter(goal => goal.GoalID !== selectedGoal.GoalID));
+    setShowDeleteModal(false);
+    showNotification('success', 'Goal deleted successfully!');
+  } catch (error) {
+    console.error('Error deleting goal:', error);
+    showNotification('error', error.message || 'Failed to delete goal');
+  }
+};
 
   const calculateProgress = (goal) => {
     const totalIncome = goal.periodDetails.totalIncome;
@@ -186,6 +333,21 @@ const ViewGoals = () => {
                         </div>
                       )}
                     </div>
+
+                    <div className="action-buttons">
+                      <button
+                        onClick={() => handleEditClick(goal)}
+                        className="edit-button"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(goal)}
+                        className="delete-button"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -202,6 +364,86 @@ const ViewGoals = () => {
           </button>
         </div>
       </div>
+
+      {/* Delete Modal */}
+      <div className={`modal ${showDeleteModal ? 'show' : ''}`}>
+        <div className="modal-content">
+          <h2>Confirm Delete</h2>
+          <p>Are you sure you want to delete this goal?</p>
+          <div className="modal-buttons">
+            <button onClick={handleDeleteGoal} className="confirm-button">Yes, Delete</button>
+            <button onClick={() => setShowDeleteModal(false)} className="cancel-button">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      <div className={`modal ${showEditModal ? 'show' : ''}`}>
+        <div className="modal-content">
+          <h2>Edit Goal</h2>
+          <form onSubmit={(e) => { e.preventDefault(); handleUpdateGoal(); }}>
+            <div className="form-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                name="name"
+                value={editFormData.name}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Target Amount:</label>
+              <input
+                type="number"
+                name="targetAmount"
+                value={editFormData.targetAmount}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Start Date:</label>
+              <input
+                type="date"
+                name="startDate"
+                value={editFormData.startDate}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Target Date:</label>
+              <input
+                type="date"
+                name="targetDate"
+                value={editFormData.targetDate}
+                onChange={handleEditFormChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label>Description:</label>
+              <textarea
+                name="description"
+                value={editFormData.description}
+                onChange={handleEditFormChange}
+              />
+            </div>
+            <div className="modal-buttons">
+              <button type="submit" className="confirm-button">Update</button>
+              <button type="button" onClick={() => setShowEditModal(false)} className="cancel-button">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Notification */}
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+        </div>
+      )}
 
       <style>{`
         .view-goals {
@@ -243,6 +485,9 @@ const ViewGoals = () => {
         }
 
         .error-message {
+          background: #fee2e
+      }
+.error-message {
           background: #fee2e2;
           color: #dc2626;
           padding: 1rem;
@@ -285,11 +530,11 @@ const ViewGoals = () => {
         .filter-group input,
         .filter-group select {
           width: 100%;
-          padding: 0.0rem;
-          border: 7px solid rgba(255, 255, 255, 0.1);
-          border-radius: 1.5rem;
+          padding: 0.75rem;
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-radius: 0.5rem;
           background: rgba(255, 255, 255, 0.1);
-          color: black;
+          color: white;
           transition: all 0.3s ease;
         }
 
@@ -336,18 +581,18 @@ const ViewGoals = () => {
         }
 
         .goal-status.completed {
-          background:rgb(0, 255, 89);
-          color:rgb(0, 0, 0);
+          background: rgb(0, 255, 89);
+          color: rgb(0, 0, 0);
         }
 
         .goal-status.ongoing {
           background: #fff7ed;
-          color:rgb(0, 149, 255);
+          color: rgb(0, 149, 255);
         }
 
         .goal-status.incomplete {
-          background:rgb(255, 0, 0);
-          color:rgb(0, 0, 0);
+          background: rgb(255, 0, 0);
+          color: rgb(0, 0, 0);
         }
 
         .progress-container {
@@ -386,37 +631,144 @@ const ViewGoals = () => {
           background: #ef4444;
         }
 
-        .goal-description {
-          color: #6b7280;
-          font-size: 0.95rem;
-          margin-bottom: 1.5rem;
-          line-height: 1.5;
-        }
-
-        .goal-info {
-          display: grid;
-          gap: 0.75rem;
-        }
-
-        .info-row {
+        .action-buttons {
           display: flex;
-          justify-content: space-between;
-          padding-bottom: 0.5rem;
-          border-bottom: 1px solidrgb(79, 157, 104);
+          gap: 1rem;
+          margin-top: 1rem;
+          justify-content: flex-end;
         }
 
-        .info-row .label {
-          color: #6b7280;
-          font-size: 0.875rem;
-        }
-
-        .info-row span:last-child {
-          color: #1e40af;
+        .edit-button,
+        .delete-button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 0.5rem;
           font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
         }
 
-        .info-row.remaining span:last-child {
-          color: #dc2626;
+        .edit-button {
+          background: #3b82f6;
+          color: white;
+        }
+
+        .delete-button {
+          background: #ef4444;
+          color: white;
+        }
+
+        .edit-button:hover,
+        .delete-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+
+        .modal.show {
+          display: flex;
+        }
+
+        .modal-content {
+          background: white;
+          padding: 2rem;
+          border-radius: 1rem;
+          width: 90%;
+          max-width: 500px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-content h2 {
+          color: #1e40af;
+          margin-bottom: 1rem;
+        }
+
+        .form-group {
+          margin-bottom: 1rem;
+        }
+
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #4b5563;
+        }
+
+        .form-group input,
+        .form-group textarea {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          font-size: 1rem;
+        }
+
+        .modal-buttons {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+          margin-top: 1.5rem;
+        }
+
+        .confirm-button,
+        .cancel-button {
+          padding: 0.5rem 1rem;
+          border: none;
+          border-radius: 0.5rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .confirm-button {
+          background: #3b82f6;
+          color: white;
+        }
+
+        .cancel-button {
+          background: #9ca3af;
+          color: white;
+        }
+
+        .notification {
+          position: fixed;
+          top: 1rem;
+          right: 1rem;
+          padding: 1rem 2rem;
+          border-radius: 0.5rem;
+          color: white;
+          z-index: 1000;
+          animation: slideIn 0.3s ease-out;
+        }
+
+        .notification.success {
+          background: #10b981;
+        }
+
+        .notification.error {
+          background: #ef4444;
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
         }
 
         .back-button {
@@ -453,10 +805,24 @@ const ViewGoals = () => {
           .goal-card {
             padding: 1.25rem;
           }
+
+          .modal-content {
+            padding: 1.5rem;
+            margin: 1rem;
+          }
+
+          .action-buttons {
+            flex-direction: column;
+          }
+
+          .edit-button,
+          .delete-button {
+            width: 100%;
+          }
         }
       `}</style>
     </div>
   );
 };
 
-export default ViewGoals;
+export default ViewGoals;          

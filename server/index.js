@@ -633,7 +633,123 @@ app.get('/api/income/total', verifyToken, (req, res) => {
     res.json({ totalIncome: results[0].totalIncome });
   });
 });
+// Add these endpoints to your server code
 
+// Update savings goal
+app.put('/api/savings-goals/:goalId', verifyToken, async (req, res) => {
+  try {
+    const goalId = req.params.goalId;
+    const {
+      UserID,
+      Name,
+      TargetAmount,
+      StartDate,
+      TargetDate,
+      Description
+    } = req.body;
+
+    // First verify that the goal belongs to the user
+    const verifyQuery = 'SELECT * FROM SavingsGoals WHERE GoalID = ? AND UserID = ?';
+    db.query(verifyQuery, [goalId, UserID], async (verifyErr, verifyResults) => {
+      if (verifyErr) {
+        console.error('Error verifying goal ownership:', verifyErr);
+        return res.status(500).json({ error: 'Failed to verify goal ownership' });
+      }
+
+      if (verifyResults.length === 0) {
+        return res.status(403).json({ error: 'Unauthorized to modify this goal' });
+      }
+
+      // Calculate new savings amount
+      const { actualSavings } = await calculateSavingsForPeriod(
+        UserID,
+        StartDate,
+        TargetDate
+      );
+
+      const updateQuery = `
+        UPDATE SavingsGoals 
+        SET 
+          Name = ?,
+          TargetAmount = ?,
+          CurrentAmount = ?,
+          StartDate = ?,
+          TargetDate = ?,
+          Description = ?,
+          Status = ?,
+          UpdatedAt = CURRENT_TIMESTAMP
+        WHERE GoalID = ? AND UserID = ?
+      `;
+
+      const status = actualSavings >= TargetAmount ? 'COMPLETED' : 'ACTIVE';
+
+      db.query(
+        updateQuery,
+        [
+          Name,
+          TargetAmount,
+          actualSavings,
+          StartDate,
+          TargetDate,
+          Description,
+          status,
+          goalId,
+          UserID
+        ],
+        (updateErr, updateResult) => {
+          if (updateErr) {
+            console.error('Error updating goal:', updateErr);
+            return res.status(500).json({ error: 'Failed to update goal' });
+          }
+
+          res.json({ 
+            message: 'Goal updated successfully',
+            actualSavings,
+            status
+          });
+        }
+      );
+    });
+  } catch (error) {
+    console.error('Error in goal update:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Delete savings goal
+app.delete('/api/savings-goals/:goalId', verifyToken, (req, res) => {
+  try {
+    const goalId = req.params.goalId;
+    const userId = req.user.userId; // Get userId from the verified token
+
+    // First verify that the goal belongs to the user
+    const verifyQuery = 'SELECT * FROM SavingsGoals WHERE GoalID = ? AND UserID = ?';
+    db.query(verifyQuery, [goalId, userId], (verifyErr, verifyResults) => {
+      if (verifyErr) {
+        console.error('Error verifying goal ownership:', verifyErr);
+        return res.status(500).json({ error: 'Failed to verify goal ownership' });
+      }
+
+      if (verifyResults.length === 0) {
+        return res.status(403).json({ error: 'Unauthorized to delete this goal' });
+      }
+
+      // Proceed with deletion
+      const deleteQuery = 'DELETE FROM SavingsGoals WHERE GoalID = ? AND UserID = ?';
+      db.query(deleteQuery, [goalId, userId], (deleteErr, deleteResult) => {
+        if (deleteErr) {
+          console.error('Error deleting goal:', deleteErr);
+          return res.status(500).json({ error: 'Failed to delete goal' });
+        }
+
+        res.json({ message: 'Goal deleted successfully' });
+      });
+    });
+  } catch (error) {
+    console.error('Error in goal deletion:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 /////
 // Create new budget
