@@ -1,43 +1,89 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const WelcomePage = () => {
-  const [showAnimation, setShowAnimation] = useState(true);
+  const [showText, setShowText] = useState(true); // אם להציג טקסט או לוגו
+
+  useEffect(() => {
+    if (!showText) {
+      // אם הטקסט אינו מוצג, מפעילים את אנימציית החזיר מייד
+      document.querySelector('.logo-container').classList.add('animate-logo');
+    }
+  }, [showText]);
 
   const handleAnimationEnd = () => {
-    setTimeout(() => setShowAnimation(false), 100);
+    setShowText(false); // מסיים אנימציה ומחליף לחזיר
   };
 
   const handleGetStarted = () => {
-    window.location.href = '/login';
+    window.location.href = '/login'; // מוביל לדף הלוגין
   };
 
   return (
-    <div className="welcome-container" onAnimationEnd={handleAnimationEnd}>
-      {showAnimation && <div className="animation-overlay"></div>}
-      <div className="logo-container">
-        <img
-          src="/images/logonew.png" // החלף את הנתיב לפי מיקום הלוגו שלך
-          alt="FinTrack Logo"
-          className="logo"
-        />
-      </div>
-      <div className="text-container">
-        <h1 className="welcome-text">WELCOME TO FINTRACK</h1>
-        <button onClick={handleGetStarted} className="btn-get-started">
-          Get Started
-        </button>
-      </div>
+    <div className="welcome-container">
+      {showText ? (
+        <div
+          className="text-container fade-in-out"
+          onAnimationEnd={handleAnimationEnd}
+        >
+          <h1 className="welcome-text">WELCOME TO FINTRACK</h1>
+        </div>
+      ) : (
+        <div className="logo-container">
+          <img
+            src="/images/whiteLogoNoBG.png" // מסלול לתמונה החדשה
+            alt="FinTrack Logo"
+            className="logo"
+          />
+        </div>
+      )}
+      <button onClick={handleGetStarted} className="btn-get-started">
+        Get Started
+      </button>
       <style>{styles}</style>
     </div>
   );
 };
 
 const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: scale(1.2);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden; /* מסתיר את האלמנט לאחר היעלמות */
+    }
+  }
+
+  @keyframes logoBounce {
+    0% {
+      transform: scale(0) translateY(50px);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.5) translateY(-20px);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
 
   .welcome-container {
     min-height: 100vh;
-    background: linear-gradient(to bottom, #d0ebff, #90caf9);
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,79 +94,59 @@ const styles = `
     overflow: hidden;
   }
 
-  .animation-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 255, 255, 0.7);
-    z-index: 1000;
-    animation: fadeOut 3s forwards;
+  .text-container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .fade-in-out .welcome-text {
+    animation: fadeIn 1.5s ease-in-out, fadeOut 1s ease-in-out 2s forwards;
+    font-size: 6rem; 
+    color: #ffffff; 
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5); 
+    margin-bottom: 20px;
+    text-transform: uppercase;
   }
 
   .logo-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: bounce 2s infinite;
-    z-index: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden; 
+  }
+
+  .logo-container.animate-logo {
+    visibility: visible;
+    animation: logoBounce 1.5s ease-out;
   }
 
   .logo {
-    width: 80vw; /* הלוגו ימלא 80% מרוחב המסך */
-    max-width: 700px; /* גודל מקסימלי */
+    width: 300px; 
     height: auto;
-    opacity: 0.2; /* הלוגו שקוף קלות כדי לא להסתיר את הטקסט */
-  }
-
-  @keyframes bounce {
-    0%, 100% {
-      transform: translate(-50%, -50%);
-    }
-    50% {
-      transform: translate(-50%, calc(-50% - 20px));
-    }
-  }
-
-  .text-container {
-    position: relative;
-    z-index: 1; /* הטקסט יופיע מעל הלוגו */
-  }
-
-  .welcome-text {
-    font-size: 4rem; /* גודל כתב מוגדל */
-    color: #1e3a8a;
-    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    margin-bottom: 20px;
-    text-transform: uppercase; /* טקסט באותיות גדולות */
   }
 
   .btn-get-started {
-    background-color: #2563eb;
-    color: white;
+    position: absolute;
+    bottom: 30px;
+    background-color: #3b82f6; 
+    color: #ffffff; 
     border: none;
     padding: 12px 24px;
-    font-size: 1.5rem; /* גודל כפתור מוגדל */
+    font-size: 1.5rem;
+    font-weight: bold;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-  }
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 
   .btn-get-started:hover {
-    background-color: #1d4ed8;
+    background-color: #3b82f6;
     transform: scale(1.05);
   }
 
   .btn-get-started:active {
+    background-color: #2563eb;
     transform: scale(0.95);
-  }
-
-  @keyframes fadeOut {
-    from {
-      opacity: 1;
-    }
-    to {
-      opacity: 0;
-    }
   }
 `;
 

@@ -52,7 +52,9 @@ const LoginForm = () => {
       <div className="login-form-wrapper">
         <div className="form-header">
           <div className="logo-container">
-            <div className="logo">FT</div>
+            <div className="logo">
+              <img src="/images/whiteLogoNoBG.png" alt="Logo" />
+          </div>
           </div>
           <h1>Welcome Back!</h1>
           <p>Please sign in to your account</p>
@@ -138,6 +140,7 @@ const LoginForm = () => {
           box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
           width: 100%;
           max-width: 420px;
+          margin: 0 auto; /* מרכז את הטופס */
         }
 
         .form-header {
@@ -150,18 +153,23 @@ const LoginForm = () => {
         }
 
         .logo {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin: 0 auto;
           width: 60px;
           height: 60px;
           background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
           border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-size: 1.5rem;
-          font-weight: bold;
-          margin: 0 auto;
           box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+          position: relative;
+        }
+
+        .logo img {
+          position: absolute;
+          width: 100%; /* גודל מותאם ללוגו */
+          height: 100%;
+          object-fit: contain;
         }
 
         .form-header h1 {
@@ -180,12 +188,14 @@ const LoginForm = () => {
           display: flex;
           flex-direction: column;
           gap: 1.25rem;
+          align-items: center;
         }
 
         .form-group {
           display: flex;
           flex-direction: column;
           gap: 0.5rem;
+          width: 100%;
         }
 
         .password-header {
@@ -202,10 +212,13 @@ const LoginForm = () => {
 
         .input-container {
           position: relative;
+          width: 100%;
         }
 
         input {
-          width: 100%;
+          width: calc(100% - 2rem);
+          margin: 0 auto;
+          display: block;
           padding: 0.75rem 1rem;
           border: 2px solid #e2e8f0;
           border-radius: 10px;

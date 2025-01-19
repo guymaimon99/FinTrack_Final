@@ -186,101 +186,105 @@ const RegistrationForm = () => {
           </div>
         </form>
       </div>
-      <style>
-        {`
-          .register-form-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(to right, #ebf8ff, #ffffff);
-          }
+<style>
+  {`
+    .register-form-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      padding: 1rem;
+    }
 
-          .form-header h2 {
-            font-size: 2rem;
-            color: #1e3a8a;
-            margin-bottom: 1rem;
-          }
+    .form-header {
+      border-top-left-radius: 1.5rem;
+      border-bottom-left-radius: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      color: white;
+      font-size: 2.5rem;
+      text-align: center;
+    }
 
-          .form-body {
-            background: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
-          }
+    .form-body {
+      background: white;
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      flex: 1;
+      max-width: 700px;
+      min-height: 950px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-          .form-group {
-            margin-bottom: 1rem;
-          }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
 
-          .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-weight: 600;
-          }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #374151;
+      font-weight: 600;
+    }
 
-          .form-group input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.25rem;
-            outline: none;
-            font-size: 1rem;
-          }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1rem;
+    }
 
-          .form-group input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
-          }
+    .form-group input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
 
-          .error {
-            color: #f87171;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-          }
+    .form-group button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
 
-          .form-group button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 0.25rem;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-          }
+    .form-group button:hover {
+      background-color: #2563eb;
+    }
 
-          .form-group button:hover {
-            background-color: #2563eb;
-          }
+    .form-group button:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+    }
 
-          .form-group button:disabled {
-            background-color: #93c5fd;
-            cursor: not-allowed;
-          }
+    .login-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
 
-          .login-link {
-            text-align: center;
-            margin-top: 1rem;
-          }
+    .login-link a {
+      color: #3b82f6;
+      text-decoration: underline;
+      transition: color 0.3s;
+    }
 
-          .login-link a {
-            color: #3b82f6;
-            text-decoration: underline;
-            transition: color 0.3s;
-          }
-
-          .login-link a:hover {
-            color: #2563eb;
-          }
-        `}
-      </style>
+    .login-link a:hover {
+      color: #2563eb;
+    }
+  `}
+</style>
     </div>
   );
 };

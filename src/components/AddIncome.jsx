@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-
 const AddIncome = () => {
   const [formData, setFormData] = useState({
     amount: '',
@@ -230,156 +229,155 @@ const AddIncome = () => {
       </div>
       <div className="background-overlay"></div>
 
-      <style>{`
-        .add-income-container {
-          position: relative;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          background: linear-gradient(135deg, #dceafe, #bfdbfe);
-          font-family: 'Poppins', sans-serif;
-          padding: 20px;
-        }
+      <style>
+        {`
+          .add-income-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+          }
 
-        .background-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background-image: url('/images/logonew.png');
-          background-repeat: repeat;
-          background-size: 150px;
-          background-position: center;
-          opacity: 0.05;
-          pointer-events: none;
-        }
+          .add-income-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 300px;
+            height: 200px;
+            background: url('/images/whiteFullLogoNoBG.png') no-repeat;
+            background-size: contain;
+            z-index: 3;
+          }
 
-        .form-card {
-          background: white;
-          border-radius: 15px;
-          padding: 40px;
-          width: 100%;
-          max-width: 500px;
-          box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-          z-index: 2;
-        }
+          .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-repeat: repeat;
+            background-size: 150px;
+            background-position: center;
+            opacity: 0.05;
+          }
 
-        .form-title {
-          font-size: 1.8rem;
-          color: #1d4ed8;
-          margin-bottom: 30px;
-          text-align: center;
-          font-weight: bold;
-        }
-
-        .message {
-          padding: 12px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-          text-align: center;
-          font-size: 0.9rem;
-        }
-
-        .message.success {
-          background-color: #dcfce7;
-          color: #166534;
-          border: 1px solid #bbf7d0;
-        }
-
-        .message.error {
-          background-color: #fee2e2;
-          color: #991b1b;
-          border: 1px solid #fecaca;
-        }
-
-        .form-content {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .form-group {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .form-group label {
-          font-weight: 600;
-          color: #475569;
-          margin-bottom: 8px;
-          font-size: 0.9rem;
-        }
-
-        .form-input {
-          padding: 12px;
-          border-radius: 8px;
-          border: 1px solid #cbd5e1;
-          font-size: 1rem;
-          outline: none;
-          transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-          border-color: #2563eb;
-          box-shadow: 0px 0px 0px 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-textarea {
-          resize: vertical;
-          min-height: 100px;
-        }
-
-        .button-group {
-          display: flex;
-          justify-content: space-between;
-          gap: 15px;
-          margin-top: 10px;
-        }
-
-        .submit-button {
-          flex: 1;
-          background: #2563eb;
-          color: white;
-          padding: 12px 20px;
-          border: none;
-          border-radius: 8px;
-          font-size: 1rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .submit-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .submit-button:not(:disabled):hover {
-          background: #1d4ed8;
-          transform: translateY(-1px);
-        }
-
-        .submit-button.alt-button {
-          background: #e2e8f0;
-          color: #475569;
-        }
-
-        .submit-button.alt-button:not(:disabled):hover {
-          background: #cbd5e1;
-        }
-
-        @media (max-width: 640px) {
           .form-card {
-            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+            margin: 0 20px;
+            font-family: 'Arial', sans-serif;
+            font-size: 16px;
+            color: #333;
+          }
+
+          .form-title {
+            font-size: 1.8rem;
+            color: #1d4ed8;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+          }
+
+          .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+          }
+
+          .message.success {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+          }
+
+          .message.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+          }
+
+          .form-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+          }
+
+          .form-group {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .form-group label {
+            font-weight: bold;
+            color: #475569;
+            margin-bottom: 5px;
+            font-size: 14px;
+          }
+
+          .form-input {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+            color: #1e293b;
+          }
+
+          .form-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0px 0px 8px rgba(37, 99, 235, 0.5);
+          }
+
+          .form-textarea {
+            resize: none;
           }
 
           .button-group {
-            flex-direction: column;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
           }
-        }
-      `}</style>
+
+          .submit-button {
+            flex: 1;
+            background: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .submit-button:hover {
+            background: #1d4ed8;
+          }
+
+          .submit-button.alt-button {
+            background: #d1d5db;
+            color: #1f2937;
+          }
+
+          .submit-button.alt-button:hover {
+            background: #9ca3af;
+          }
+        `}
+      </style>
     </div>
   );
 };

@@ -205,18 +205,29 @@ const ListExpenses = () => {
           max-width: 1200px;
           margin: 0 auto;
           font-family: 'Poppins', sans-serif;
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
+          border-radius: 12px;
         }
 
         .expense-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: linear-gradient(135deg, #3b82f6, #60a5fa);
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
           color: white;
           padding: 20px;
           border-radius: 12px;
           margin-bottom: 24px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          position: relative;
+        }
+
+        .expense-header img {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 50px;
+          height: auto;
         }
 
         .header-buttons {
@@ -241,7 +252,7 @@ const ListExpenses = () => {
         }
 
         .refresh-btn {
-          background-color: #34d399;
+          background-color: #2563eb;
         }
 
         .date-filter {
@@ -270,7 +281,7 @@ const ListExpenses = () => {
 
         .date-input:focus {
           border-color: #3b82f6;
-          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
         .expense-stats {
@@ -294,7 +305,7 @@ const ListExpenses = () => {
         .total-amount {
           font-size: 2rem;
           font-weight: 600;
-          color: #3b82f6;
+          color: #1e3a8a;
         }
 
         .category-list {
@@ -334,13 +345,13 @@ const ListExpenses = () => {
         }
 
         .expense-table th {
-          background-color: #f8fafc;
+          background-color: #e0f2fe;
           font-weight: 600;
-          color: #1f2937;
+          color: #1e3a8a;
         }
 
         .expense-table tr:hover {
-          background-color: #f8fafc;
+          background-color: #f1f5f9;
         }
 
         .loading-overlay {

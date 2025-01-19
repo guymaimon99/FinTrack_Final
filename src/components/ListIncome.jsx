@@ -204,19 +204,30 @@ const ListIncome = () => {
           padding: 20px;
           max-width: 1200px;
           margin: 0 auto;
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Poppins', sans-serif; 
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
+          border-radius: 12px;
         }
 
         .income-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: linear-gradient(135deg, #22c55e, #16a34a);
+          background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); 
           color: white;
           padding: 20px;
           border-radius: 12px;
           margin-bottom: 24px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          position: relative; 
+        }
+
+        .income-header img {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 50px;
+          height: auto;
         }
 
         .header-buttons {
@@ -241,7 +252,7 @@ const ListIncome = () => {
         }
 
         .refresh-btn {
-          background-color: #15803d;
+          background-color: #2563eb;
         }
 
         .date-filter {
@@ -269,8 +280,8 @@ const ListIncome = () => {
         }
 
         .date-input:focus {
-          border-color: #22c55e;
-          box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.1);
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
         }
 
         .income-stats {
@@ -294,7 +305,7 @@ const ListIncome = () => {
         .total-amount {
           font-size: 2rem;
           font-weight: 600;
-          color: #16a34a;
+          color: #1e3a8a;
         }
 
         .category-list {
@@ -334,13 +345,13 @@ const ListIncome = () => {
         }
 
         .income-table th {
-          background-color: #f8fafc;
+          background-color: #e0f2fe;
           font-weight: 600;
-          color: #1f2937;
+          color: #1e3a8a;
         }
 
         .income-table tr:hover {
-          background-color: #f8fafc;
+          background-color: #f1f5f9;
         }
 
         .loading-overlay {
