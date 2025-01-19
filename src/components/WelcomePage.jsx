@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
 const WelcomePage = () => {
-  const [showText, setShowText] = useState(true); // אם להציג טקסט או לוגו
+  const [showText, setShowText] = useState(true);
 
   useEffect(() => {
     if (!showText) {
-      // אם הטקסט אינו מוצג, מפעילים את אנימציית החזיר מייד
       document.querySelector('.logo-container').classList.add('animate-logo');
     }
   }, [showText]);
 
   const handleAnimationEnd = () => {
-    setShowText(false); // מסיים אנימציה ומחליף לחזיר
+    setShowText(false);
   };
 
   const handleGetStarted = () => {
-    window.location.href = '/login'; // מוביל לדף הלוגין
+    window.location.href = '/login';
   };
 
   return (
@@ -28,17 +27,27 @@ const WelcomePage = () => {
           <h1 className="welcome-text">WELCOME TO FINTRACK</h1>
         </div>
       ) : (
-        <div className="logo-container">
-          <img
-            src="/images/whiteLogoNoBG.png" // מסלול לתמונה החדשה
-            alt="FinTrack Logo"
-            className="logo"
-          />
-        </div>
+        <>
+          <div className="logo-container">
+            <img
+              src="/images/whiteLogoNoBG.png"
+              alt="FinTrack Logo"
+              className="logo"
+            />
+          </div>
+          <div className="caption-container">
+            <h2 className="main-caption"> Track Your Money!</h2>
+            <div className="features-list">
+              <p>✨ Smart Financial Planning</p>
+              <p>💰 Track Income & Expenses</p>
+              <p>🎯 Set & Achieve Goals</p>
+            </div>
+          </div>
+          <button onClick={handleGetStarted} className="btn-get-started">
+            Get Started
+          </button>
+        </>
       )}
-      <button onClick={handleGetStarted} className="btn-get-started">
-        Get Started
-      </button>
       <style>{styles}</style>
     </div>
   );
@@ -62,7 +71,7 @@ const styles = `
     }
     100% {
       opacity: 0;
-      visibility: hidden; /* מסתיר את האלמנט לאחר היעלמות */
+      visibility: hidden;
     }
   }
 
@@ -81,6 +90,17 @@ const styles = `
     }
   }
 
+  @keyframes slideUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .welcome-container {
     min-height: 100vh;
     background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
@@ -92,6 +112,7 @@ const styles = `
     text-align: center;
     position: relative;
     overflow: hidden;
+    padding: 20px;
   }
 
   .text-container {
@@ -112,7 +133,8 @@ const styles = `
     display: flex;
     justify-content: center;
     align-items: center;
-    visibility: hidden; 
+    visibility: hidden;
+    margin-bottom: 2rem;
   }
 
   .logo-container.animate-logo {
@@ -125,28 +147,80 @@ const styles = `
     height: auto;
   }
 
+  .caption-container {
+    margin: 2rem 0 4rem 0;
+    animation: slideUp 1s ease-out 0.5s both;
+  }
+
+  .main-caption {
+    color: #ffffff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .features-list p {
+    color: #ffffff;
+    font-size: 1.25rem;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
   .btn-get-started {
-    position: absolute;
-    bottom: 30px;
-    background-color: #3b82f6; 
-    color: #ffffff; 
+    background-color: white;
+    color: #1e40af;
     border: none;
-    padding: 12px 24px;
+    padding: 1rem 2.5rem;
     font-size: 1.5rem;
     font-weight: bold;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
 
   .btn-get-started:hover {
-    background-color: #3b82f6;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background-color: #f8fafc;
   }
 
   .btn-get-started:active {
-    background-color: #2563eb;
-    transform: scale(0.95);
+    transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    .fade-in-out .welcome-text {
+      font-size: 3rem;
+    }
+
+    .main-caption {
+      font-size: 2rem;
+    }
+
+    .features-list p {
+      font-size: 1.1rem;
+    }
+
+    .logo {
+      width: 200px;
+    }
+
+    .btn-get-started {
+      font-size: 1.25rem;
+      padding: 0.875rem 2rem;
+    }
   }
 `;
 
