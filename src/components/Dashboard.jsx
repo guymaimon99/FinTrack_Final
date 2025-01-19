@@ -375,10 +375,10 @@ if (loading) {
     <div className="dashboard-container">
       {/* Sidebar */}
       <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="logo"></div>
-          <h2>FINTRACK</h2>
-        </div>
+      <div className="sidebar-header">
+        <img src="/images/whiteLogoNoBG.png" alt="FinTrack Logo" className="logo" />
+        <h2>FINTRACK</h2>
+      </div>
         <ul>
           <li><a href="/add-income">Add Income</a></li>
           <li><a href="/add-expense">Add Expense</a></li>
@@ -478,7 +478,7 @@ if (loading) {
           border-radius: 10px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
+          
         .chart-container {
           max-width: 600px;
           margin: 0 auto;
@@ -499,14 +499,15 @@ if (loading) {
           text-align: center;
           margin-bottom: 20px;
           font-family: 'Arial', sans-serif;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         .logo {
-          background: white;
-          border-radius: 50%;
-          width: 50px;
-          height: 50px;
+          width: 100px;
+          height: 100px;
           margin: 0 auto;
+          display: block;
+          object-fit: contain;
         }
 
         ul {
@@ -528,11 +529,11 @@ if (loading) {
           display: block;
           padding: 10px;
           transition: 0.3s;
-          border-radius: 10px;
+          border-radius: 40px;
         }
 
         ul li a:hover {
-          background: #3b82f6;
+          background:rgb(23, 45, 142);
         }
 
         .main-content {
