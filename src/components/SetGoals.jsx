@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Confetti from 'react-confetti';
+
+// Google Calendar API constants
+const CLIENT_ID = <process className="env REACT_APP_GOOGLE_CLIENT_ID"></process>;
+const API_KEY = <process className="env REACT_APP_GOOGLE_API_KEY"></process>;
+const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
 const SetGoals = () => {
     const [step, setStep] = useState(1);
@@ -11,12 +17,132 @@ const SetGoals = () => {
         description: '',
         priority: '0',
     });
-
     const [success, setSuccess] = useState(false);
+    const [gapiLoaded, setGapiLoaded] = useState(false);
+    const [isAuthorized, setIsAuthorized] = useState(false);
+
+    // Load Google API client
+    useEffect(() => {
+        // Only load if the gapi variable exists
+        if (window.gapi) {
+            const loadGapi = () => {
+                window.gapi.load('client:auth2', initClient);
+            };
+
+            const initClient = () => {
+                window.gapi.client.init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    discoveryDocs: DISCOVERY_DOCS,
+                    scope: SCOPES,
+                }).then(() => {
+                    setGapiLoaded(true);
+                    // Check if already signed in
+                    if (window.gapi.auth2.getAuthInstance().isSignedIn.get()) {
+                        setIsAuthorized(true);
+                    }
+                    
+                    // Listen for sign-in state changes
+                    window.gapi.auth2.getAuthInstance().isSignedIn.listen((isSignedIn) => {
+                        setIsAuthorized(isSignedIn);
+                    });
+                }).catch(error => {
+                    console.error("Error initializing Google API client:", error);
+                });
+            };
+
+            loadGapi();
+        } else {
+            console.error("Google API client not available");
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleAuth = async () => {
+        // If already authorized, return true
+        if (isAuthorized) return true;
+        
+        // If API not loaded, return false
+        if (!gapiLoaded) {
+            console.error("Google API client not loaded yet");
+            return false;
+        }
+
+        try {
+            await window.gapi.auth2.getAuthInstance().signIn();
+            return true;
+        } catch (error) {
+            console.error("Google Auth Error:", error);
+            return false;
+        }
+    };
+
+    const createCalendarEvents = async () => {
+        if (!gapiLoaded) {
+            console.error("Google API client not loaded yet");
+            return;
+        }
+
+        try {
+            const startDate = new Date(formData.startDate);
+            const targetDate = new Date(formData.targetDate);
+            const events = [];
+
+            // Validate dates
+            if (isNaN(startDate.getTime()) || isNaN(targetDate.getTime())) {
+                console.error("Invalid date format");
+                return;
+            }
+
+            // Create a copy of the start date to avoid modifying during iterations
+            const currentDate = new Date(startDate);
+            
+            // Add events for each day between start and target date
+            while (currentDate <= targetDate) {
+                // Create new Date objects for start/end to avoid reference issues
+                const eventStartTime = new Date(currentDate);
+                eventStartTime.setHours(8, 0, 0, 0);
+                
+                const eventEndTime = new Date(currentDate);
+                eventEndTime.setHours(9, 0, 0, 0);
+                
+                const event = {
+                    summary: `Goal Reminder: ${formData.name}`,
+                    description: formData.description,
+                    start: {
+                        dateTime: eventStartTime.toISOString(),
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use local timezone
+                    },
+                    end: {
+                        dateTime: eventEndTime.toISOString(),
+                        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use local timezone
+                    },
+                };
+
+                try {
+                    const response = await window.gapi.client.calendar.events.insert({
+                        calendarId: "primary",
+                        resource: event,
+                    });
+                    console.log("Event created:", response);
+                    events.push(response);
+                } catch (error) {
+                    console.error("Error creating event:", error);
+                }
+
+                // Move to next day
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+
+            return events.length > 0;
+        } catch (error) {
+            console.error("Error creating calendar events:", error);
+            return false;
+        }
     };
 
     const handleSubmit = async () => {
@@ -24,6 +150,17 @@ const SetGoals = () => {
             const token = localStorage.getItem('token');
             const userId = localStorage.getItem('userId');
 
+            if (!token || !userId) {
+                throw new Error('Authentication required. Please log in again.');
+            }
+
+            // Validate form data
+            if (!formData.name || !formData.targetAmount || !formData.targetDate) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Submit goal to API
             const response = await fetch('http://localhost:5001/api/savings-goals', {
                 method: 'POST',
                 headers: {
@@ -34,9 +171,22 @@ const SetGoals = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to save goal');
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to save goal');
             }
 
+            // Add Google Calendar events if API available
+            if (window.gapi) {
+                const authSuccess = await handleAuth();
+                if (authSuccess) {
+                    const eventsCreated = await createCalendarEvents();
+                    if (eventsCreated) {
+                        alert("Goal reminders added to Google Calendar!");
+                    }
+                }
+            }
+
+            // Reset form and show success
             setFormData({
                 name: '',
                 targetAmount: '',
@@ -50,6 +200,7 @@ const SetGoals = () => {
             setTimeout(() => setSuccess(false), 5000);
         } catch (error) {
             console.error('Error saving goal:', error);
+            alert(`Error: ${error.message || 'Failed to save goal'}`);
         }
     };
 
@@ -65,8 +216,14 @@ const SetGoals = () => {
                             placeholder="Goal Name"
                             value={formData.name}
                             onChange={handleChange}
+                            required
                         />
-                        <button onClick={() => setStep(2)}>Next</button>
+                        <button 
+                            onClick={() => setStep(2)}
+                            disabled={!formData.name}
+                        >
+                            Next
+                        </button>
                     </div>
                 );
             case 2:
@@ -79,29 +236,58 @@ const SetGoals = () => {
                             placeholder="Target Amount"
                             value={formData.targetAmount}
                             onChange={handleChange}
+                            min="1"
+                            required
                         />
-                        <button onClick={() => setStep(1)}>Back</button>
-                        <button onClick={() => setStep(3)}>Next</button>
+                        <div className="button-group">
+                            <button onClick={() => setStep(1)}>Back</button>
+                            <button 
+                                onClick={() => setStep(3)}
+                                disabled={!formData.targetAmount || parseFloat(formData.targetAmount) <= 0}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 );
             case 3:
                 return (
                     <div className="content">
                         <h2>Pick a date</h2>
-                        <input
-                            type="date"
-                            name="startDate"
-                            value={formData.startDate}
-                            onChange={handleChange}
-                        />
-                        <input
-                            type="date"
-                            name="targetDate"
-                            value={formData.targetDate}
-                            onChange={handleChange}
-                        />
-                        <button onClick={() => setStep(2)}>Back</button>
-                        <button onClick={() => setStep(4)}>Next</button>
+                        <div className="date-inputs">
+                            <div className="date-field">
+                                <label htmlFor="startDate">Start Date</label>
+                                <input
+                                    id="startDate"
+                                    type="date"
+                                    name="startDate"
+                                    value={formData.startDate}
+                                    onChange={handleChange}
+                                    required
+                                />
+                            </div>
+                            <div className="date-field">
+                                <label htmlFor="targetDate">Target Date</label>
+                                <input
+                                    id="targetDate"
+                                    type="date"
+                                    name="targetDate"
+                                    value={formData.targetDate}
+                                    onChange={handleChange}
+                                    min={formData.startDate}
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <div className="button-group">
+                            <button onClick={() => setStep(2)}>Back</button>
+                            <button 
+                                onClick={() => setStep(4)}
+                                disabled={!formData.targetDate}
+                            >
+                                Next
+                            </button>
+                        </div>
                     </div>
                 );
             case 4:
@@ -110,12 +296,15 @@ const SetGoals = () => {
                         <h2>Describe your goal</h2>
                         <textarea
                             name="description"
-                            placeholder="Description"
+                            placeholder="Description (optional)"
                             value={formData.description}
                             onChange={handleChange}
+                            rows="4"
                         />
-                        <button onClick={() => setStep(3)}>Back</button>
-                        <button onClick={handleSubmit}>Finish</button>
+                        <div className="button-group">
+                            <button onClick={() => setStep(3)}>Back</button>
+                            <button onClick={handleSubmit}>Finish</button>
+                        </div>
                     </div>
                 );
             default:
@@ -207,6 +396,32 @@ const SetGoals = () => {
                     width: 100%;
                 }
 
+                .button-group {
+                    display: flex;
+                    justify-content: space-between;
+                    width: 100%;
+                }
+
+                .date-inputs {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    width: 100%;
+                }
+
+                .date-field {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    width: 100%;
+                }
+
+                .date-field label {
+                    margin-bottom: 5px;
+                    font-weight: 500;
+                    color: #4b5563;
+                }
+
                 .step h2 {
                     color: #1e40af;
                     margin-bottom: 10px;
@@ -233,8 +448,13 @@ const SetGoals = () => {
                     transition: background-color 0.3s;
                 }
 
-                button:hover {
+                button:hover:not(:disabled) {
                     background: #1e40af;
+                }
+
+                button:disabled {
+                    background: #9ca3af;
+                    cursor: not-allowed;
                 }
 
                 @keyframes fadeIn {
