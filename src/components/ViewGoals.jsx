@@ -30,7 +30,7 @@ const ViewGoals = () => {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
 
-      const response = await fetch(`http://localhost:5001/api/savings-goals/${userId}`, {
+      const response = await fetch(`https://fintrack-final-2-0xum.onrender.com/api/savings-goals/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -103,7 +103,7 @@ const handleUpdateGoal = async () => {
 
     console.log('Updating goal with data:', updatedGoalData);
 
-    const response = await fetch(`http://localhost:5001/api/savings-goals/${selectedGoal.GoalID}`, {
+    const response = await fetch(`https://fintrack-final-2-0xum.onrender.com/api/savings-goals/${selectedGoal.GoalID}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -155,7 +155,7 @@ const handleDeleteGoal = async () => {
 
     console.log(`Deleting goal: ${selectedGoal.GoalID} for user: ${userId}`);
 
-    const response = await fetch(`http://localhost:5001/api/savings-goals/${selectedGoal.GoalID}`, {
+    const response = await fetch(`https://fintrack-final-2-0xum.onrender.com/api/savings-goals/${selectedGoal.GoalID}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

@@ -69,7 +69,7 @@ const Dashboard = () => {
       }
 
       // Get user data
-      const userResponse = await fetch(`http://localhost:5001/api/user/${userId}`, {
+      const userResponse = await fetch(`https://fintrack-final-2-0xum.onrender.com/api/user/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -81,7 +81,7 @@ const Dashboard = () => {
 
       // Fetch income
       const incomeResponse = await fetch(
-        `http://localhost:5001/api/income/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
+        `https://fintrack-final-2-0xum.onrender.com/api/income/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -95,7 +95,7 @@ const Dashboard = () => {
 
       // Fetch expenses
       const expenseResponse = await fetch(
-        `http://localhost:5001/api/expense/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
+        `https://fintrack-final-2-0xum.onrender.com/api/expense/monthly?year=${selectedDate.year}&month=${selectedDate.month}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }

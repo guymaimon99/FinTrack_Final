@@ -15,7 +15,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/forgot-password', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -41,7 +41,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/verify-reset-code', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/verify-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code: resetCode }),
@@ -67,7 +67,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/reset-password', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, newPassword }),

@@ -23,7 +23,7 @@ const SetBudget = () => {
     const fetchCategories = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5001/api/categories?type=EXPENSE', {
+            const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/categories?type=EXPENSE', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch categories');
@@ -47,7 +47,7 @@ const SetBudget = () => {
             const token = localStorage.getItem('token');
             const userId = localStorage.getItem('userId');
 
-            const response = await fetch('http://localhost:5001/api/budgets', {
+            const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/budgets', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

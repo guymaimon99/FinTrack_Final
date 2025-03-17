@@ -161,7 +161,7 @@ const SetGoals = () => {
             }
 
             // Submit goal to API
-            const response = await fetch('http://localhost:5001/api/savings-goals', {
+            const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/savings-goals', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

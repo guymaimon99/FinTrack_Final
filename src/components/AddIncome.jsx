@@ -25,7 +25,7 @@ const AddIncome = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/categories?type=INCOME', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/categories?type=INCOME', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -41,7 +41,7 @@ const AddIncome = () => {
   const fetchPaymentMethods = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/payment-methods', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/payment-methods', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -71,7 +71,7 @@ const AddIncome = () => {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
 
-      const response = await fetch('http://localhost:5001/api/income', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/income', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

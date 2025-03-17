@@ -22,7 +22,7 @@ const LoginForm = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:5001/api/login', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

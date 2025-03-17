@@ -6,7 +6,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
 const oauth2Client = new OAuth2Client(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
-    'http://localhost:5001/api/auth/google/callback'
+    'https://fintrack-final-2-0xum.onrender.com/api/auth/google/callback'
 );
 
 export const createCalendarEvent = async (accessToken, refreshToken, eventDetails) => {

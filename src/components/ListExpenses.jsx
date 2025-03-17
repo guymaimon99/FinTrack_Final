@@ -14,7 +14,7 @@ const ListExpenses = () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5001/api/expense', {
+      const response = await fetch('https://fintrack-final-2-0xum.onrender.com/api/expense', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
