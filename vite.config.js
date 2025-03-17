@@ -9,9 +9,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'), // Use '@' for imports
     },
   },
+  base: '/',
   build: {
     outDir: 'dist', // Build output
-    base: '/',
     emptyOutDir: true, // Remove old files before building
     rollupOptions: {
       input: './index.html', // Ensure the correct entry point
